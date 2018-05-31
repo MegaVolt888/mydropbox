@@ -8,15 +8,16 @@ import java.util.Properties;
 //------------Block for testing ------------------
 
 /*
+
 class TestDatabaseMain {
     public static void main(String[] args) throws SQLException, ClassNotFoundException {
         System.out.println("Starting");
        SQLHandlerDB sqlHandlerDB = new SQLHandlerDB();
         sqlHandlerDB.connect();
-//        sqlHandlerDB.createDatabase();
-//        sqlHandlerDB.addNewUser("user1","123","User1");
-//        sqlHandlerDB.addNewUser("user2","123","User2");
-//        sqlHandlerDB.addNewUser("user3","123","User3");
+        sqlHandlerDB.createDatabase();
+        sqlHandlerDB.addNewUser("user1","123","User1");
+        sqlHandlerDB.addNewUser("user2","123","User2");
+        sqlHandlerDB.addNewUser("user3","123","User3");
 //        sqlHandlerDB.deleteUser("user1");
         System.out.println(sqlHandlerDB.getNickByLoginPass("user2","123"));
         System.out.println(sqlHandlerDB.getIdByNick("User3"));
@@ -26,6 +27,7 @@ class TestDatabaseMain {
 
 }
 */
+
 
 
 
@@ -57,7 +59,7 @@ public class SQLHandlerDB {
             //-------------- CREATE TABLE ---------------
             stmt = conn.createStatement();
             sql = "CREATE TABLE USERS " +
-                    "(ID INT PRIMARY KEY     NOT NULL," +
+                    "(ID SERIAL PRIMARY KEY    ," +
                     " LOGIN         TEXT    NOT NULL, " +
                     " PASSWORD      INT     NOT NULL, " +
                     " NICK          TEXT    NOT NULL)";
@@ -71,7 +73,8 @@ public class SQLHandlerDB {
          }
     }
 
-    public static int searchLastUserID() {
+//не нужно для нового формата DB
+    /*    public static int searchLastUserID() {
         int result = 0;
         try {
             stmt = conn.createStatement();
@@ -93,7 +96,7 @@ public class SQLHandlerDB {
             System.exit(0);
         }
         return result;
-    }
+    }*/
 
     public static boolean searchLoginUser(String login) {
         try {
@@ -126,9 +129,9 @@ public class SQLHandlerDB {
                 String sql;
                 int passHash = pass.hashCode();
             System.out.println(String.valueOf("Hash = " + passHash));
-                int id = (searchLastUserID() + 1);
-                System.out.println(id);
-               sql = (String.format("INSERT INTO users (id,login,password,nick) VALUES (%s,'%s', %s, '%s');", id, login, passHash, nick));
+            //   int id = (searchLastUserID() + 1); //не нужно для нового формата DB
+              //  System.out.println(id); //не нужно для нового формата DB
+               sql = (String.format("INSERT INTO users (login,password,nick) VALUES ('%s', %s, '%s');", login, passHash, nick));
                System.out.println(sql);
                 stmt = conn.createStatement();
                 stmt.executeUpdate(sql);
