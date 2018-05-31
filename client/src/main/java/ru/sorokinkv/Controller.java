@@ -102,7 +102,7 @@ public class Controller implements Initializable {
                             if (str.startsWith("/authok ")) {
                                 nick = str.split(" ")[1];
                                 setAuthorized(true);
-                                sendCustomMsg("/history");
+                               // sendCustomMsg("/history");
                                 break;
                             }
                             mainTextArea.appendText(str);
