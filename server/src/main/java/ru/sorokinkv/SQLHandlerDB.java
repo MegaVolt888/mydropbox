@@ -14,11 +14,12 @@ class TestDatabaseMain {
        SQLHandlerDB sqlHandlerDB = new SQLHandlerDB();
         sqlHandlerDB.connect();
 //        sqlHandlerDB.createDatabase();
-        sqlHandlerDB.addNewUser("user1","123","User1");
-        sqlHandlerDB.addNewUser("user2","123","User2");
-        sqlHandlerDB.addNewUser("user3","123","User3");
+//        sqlHandlerDB.addNewUser("user1","123","User1");
+//        sqlHandlerDB.addNewUser("user2","123","User2");
+//        sqlHandlerDB.addNewUser("user3","123","User3");
 //        sqlHandlerDB.deleteUser("user1");
         System.out.println(sqlHandlerDB.getNickByLoginPass("user2","123"));
+        System.out.println(sqlHandlerDB.getIdByNick("User3"));
         System.out.println("Stopped");
         sqlHandlerDB.disconnect();
     }
@@ -232,6 +233,30 @@ public class SQLHandlerDB {
             }
         return null;
         }
+
+    public static int searchLoginInBase(String login) {
+        try {
+            ResultSet rs = stmt.executeQuery(String.format("SELECT id FROM users WHERE login = '%s';", login));
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return -1;
+    }
+
+    public static int getIdByNick(String nick) {
+        try {
+            ResultSet rs = stmt.executeQuery(String.format("SELECT id FROM users WHERE nick = '%s';", nick));
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return -1;
+    }
 
     public static void disconnect() {
         try {

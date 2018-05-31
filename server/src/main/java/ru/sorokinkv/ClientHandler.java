@@ -41,19 +41,19 @@ public class ClientHandler {
                                     out.writeUTF("Учетная запись уже используется");
                                     continue;
                                 }
-                           //     out.writeUTF("/authok " + nick);
+                                out.writeUTF("/authok " + nick);
                                 this.nick = nick;
-                                //this.id = SQLHandler.getIdByNick(nick);
-                               // server.subscribe(this);
+                               this.id = SQLHandlerDB.getIdByNick(nick);
+                                server.subscribe(this);
                                 break;
                             } else {
                                 out.writeUTF("Неверный логин/пароль");
                             }
                         }
                     }
-            /*        while (true) {
+                   while (true) {
                         String msg = in.readUTF();
-                        if (msg.startsWith("/")) {
+                      /*  if (msg.startsWith("/")) {
                             if (msg.startsWith("/w ")) {
                                 String[] tokens = msg.split(" ", 3);
                                 server.sendPrivateMsg(this, tokens[1], tokens[2]);
@@ -61,9 +61,9 @@ public class ClientHandler {
                             if (msg.equals("/history")) {
                                 sendMsg(SQLHandler.getHistory(id));
                             }
-                        } else {
+                        } else {*/
                             server.broadcastMsg(this, msg);
-                        }
+                       /* }
                         System.out.println(msg);
 
                         Scanner in = new Scanner(System.in);
@@ -71,13 +71,13 @@ public class ClientHandler {
                         if (message == "/clearhystory"){
                             SQLHandler.clearHistory(1);
                         }
+*/
 
-
-                    }*/
+                    }
                 } catch (IOException e) {
                     e.printStackTrace();
                 } finally {
-               //     server.unsubscribe(this);
+                    server.unsubscribe(this);
                     try {
                         socket.close();
                     } catch (IOException e) {

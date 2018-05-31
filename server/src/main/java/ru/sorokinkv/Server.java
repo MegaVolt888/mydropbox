@@ -12,7 +12,7 @@ public class Server {
 
     public Server() {
         try {
-            SQLHandler.connect();
+            SQLHandlerDB.connect();
             serverSocket = new ServerSocket(8182);
             clients = new Vector<ClientHandler>();
             System.out.println("Сервер запущен");
@@ -29,7 +29,7 @@ public class Server {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            SQLHandler.disconnect();
+            SQLHandlerDB.disconnect();
         }
     }
 
@@ -46,15 +46,15 @@ public class Server {
         from.sendMsg("Клиент " + to + " отсутствует");
     }*/
 
-/*    public void broadcastMsg(ClientHandler client, String msg) {
+    public void broadcastMsg(ClientHandler client, String msg) {
         String outMsg = client.getNick() + ": " + msg;
-        SQLHandler.addHistory(client.getId(), -1, outMsg);
+     //   SQLHandler.addHistory(client.getId(), -1, outMsg);
         for (ClientHandler o : clients) {
             o.sendMsg(outMsg);
         }
     }
 
-    public void broadcastClientsList() {
+/*    public void broadcastClientsList() {
         StringBuilder sb = new StringBuilder();
         sb.append("/clientslist ");
         for (ClientHandler o : clients) {
@@ -66,17 +66,17 @@ public class Server {
         }
     }*/
 
-/*
+
     public void subscribe(ClientHandler clientHandler) {
         clients.add(clientHandler);
-        broadcastClientsList();
+   //     broadcastClientsList();
     }
 
     public void unsubscribe(ClientHandler clientHandler) {
         clients.remove(clientHandler);
-        broadcastClientsList();
+  //      broadcastClientsList();
     }
-*/
+
 
     public boolean isNickBusy(String nick) {
         for (ClientHandler o : clients) {

@@ -1,15 +1,22 @@
 package ru.sorokinkv;
 
-
-
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.codec.digest.DigestUtils;
-
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.security.MessageDigest;
 
+//----------Block for testng-----------
+/*
+import static ru.sorokinkv.MD5Checksum.*;
+
+class MainMD5 {
+    public static void main(String[] args) {
+        printMd5Text("");
+    }
+}
+*/
 
 public class MD5Checksum {
 
