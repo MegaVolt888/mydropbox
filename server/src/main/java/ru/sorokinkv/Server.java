@@ -5,6 +5,8 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Vector;
 
+import static ru.sorokinkv.ServerConst.*
+
 public class Server {
     private ServerSocket serverSocket;
 
@@ -13,7 +15,7 @@ public class Server {
     public Server() {
         try {
             SQLHandlerDB.connect();
-            serverSocket = new ServerSocket(8182);
+            serverSocket = new ServerSocket(PORT);
             clients = new Vector<ClientHandler>();
             System.out.println("Сервер запущен");
             while (true) {

@@ -17,6 +17,8 @@ import java.net.Socket;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import static ru.sorokinkv.ServerConst.*;
+
 public class Controller implements Initializable {
     private Socket socket;
     private DataInputStream in;
@@ -91,7 +93,7 @@ public class Controller implements Initializable {
 
     public void connect() {
         try {
-            socket = new Socket("localhost", 8182);
+            socket = new Socket(SERVER_URL, PORT);
             in = new DataInputStream(socket.getInputStream());
             out = new DataOutputStream(socket.getOutputStream());
             Thread t = new Thread(new Runnable() {
