@@ -5,7 +5,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Vector;
 
-import static ru.sorokinkv.ServerConst.*
+import static ru.sorokinkv.ServerConst.*;
 
 public class Server {
     private ServerSocket serverSocket;
@@ -16,11 +16,12 @@ public class Server {
         try {
             SQLHandlerDB.connect();
             serverSocket = new ServerSocket(PORT);
-            clients = new Vector<ClientHandler>();
+            clients = new Vector<>();
             System.out.println("Сервер запущен");
             while (true) {
                 Socket socket = serverSocket.accept();
                 System.out.println("Клиент подключился");
+                System.out.println("Connected "+this);
                 new ClientHandler(this, socket);
             }
         } catch (Exception e) {
@@ -47,6 +48,7 @@ public class Server {
         }
         from.sendMsg("Клиент " + to + " отсутствует");
     }*/
+
 
     public void broadcastMsg(ClientHandler client, String msg) {
         String outMsg = client.getNick() + ": " + msg;

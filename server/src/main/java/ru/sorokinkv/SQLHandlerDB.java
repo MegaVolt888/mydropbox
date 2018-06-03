@@ -4,8 +4,12 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.Properties;
 
+import static ru.sorokinkv.ServerConst.*;
+
+
 
 //------------Block for testing ------------------
+
 
 /*
 
@@ -14,18 +18,22 @@ class TestDatabaseMain {
         System.out.println("Starting");
        SQLHandlerDB sqlHandlerDB = new SQLHandlerDB();
         sqlHandlerDB.connect();
-        sqlHandlerDB.createDatabase();
-        sqlHandlerDB.addNewUser("user1","123","User1");
-        sqlHandlerDB.addNewUser("user2","123","User2");
-        sqlHandlerDB.addNewUser("user3","123","User3");
-//        sqlHandlerDB.deleteUser("user1");
-        System.out.println(sqlHandlerDB.getNickByLoginPass("user2","123"));
-        System.out.println(sqlHandlerDB.getIdByNick("User3"));
+//        sqlHandlerDB.createDatabase();
+//        sqlHandlerDB.addNewUser("user1","123","User1");
+//        sqlHandlerDB.addNewUser("user2","123","User2");
+ //       sqlHandlerDB.addNewUser("user3","123","User3");
+ //      sqlHandlerDB.deleteUser("User1");
+//       sqlHandlerDB.deleteUser("User2");
+//        sqlHandlerDB.deleteUser("123");
+//        System.out.println(sqlHandlerDB.getNickByLoginPass("user2","123"));
+ //      System.out.println(sqlHandlerDB.getIdByNick("User3"));
+        System.out.println(sqlHandlerDB.getAllUserInfo());
         System.out.println("Stopped");
         sqlHandlerDB.disconnect();
     }
 
 }
+
 */
 
 
@@ -43,10 +51,10 @@ public class SQLHandlerDB {
             System.out.println("Loading Class org.postgresql.Driver");
             Class.forName("org.postgresql.Driver");
             System.out.println("Loading org.postgresql.Driver Successful");
-            String url = "jdbc:postgresql://localhost:5432/users";
+            String url = String.format("jdbc:postgresql://%s:%s/%s",DB_SERVER_URL,DB_PORT, DB_USERS_NAME);
             Properties props = new Properties();
-            props.setProperty("user", "postgres");
-            props.setProperty("password", "123");
+            props.setProperty("user", DB_LOGIN);
+            props.setProperty("password", DB_PASSWORD);
             props.setProperty("ssl", "false");
             conn = DriverManager.getConnection(url, props);
             conn.setAutoCommit(false);
@@ -107,7 +115,7 @@ public class SQLHandlerDB {
                 System.out.println(String.format("LOGIN=%s", name)); //for test
                 if (name.equals(login)) {
                     System.out.println(String.format("User %s already exists in the database", login));
-                    return false;
+                    return true;
                 }
             }
             rs.close();
@@ -119,20 +127,21 @@ public class SQLHandlerDB {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
             System.exit(0);
         }
-        return true;
+        return false;
     }
 
     //--------------- INSERT ROWS ---------------
-    public static boolean addNewUser(String login, String pass, String nick) throws SQLException {
+    public static boolean addNewUser(String nick, String login, String pass) throws SQLException {
         try {
             if(searchLoginUser(login)) {
                 String sql;
                 int passHash = pass.hashCode();
-            System.out.println(String.valueOf("Hash = " + passHash));
+     //       System.out.println(String.valueOf("Hash = " + passHash));
             //   int id = (searchLastUserID() + 1); //не нужно для нового формата DB
               //  System.out.println(id); //не нужно для нового формата DB
-               sql = (String.format("INSERT INTO users (login,password,nick) VALUES ('%s', %s, '%s');", login, passHash, nick));
-               System.out.println(sql);
+                System.out.println("SQLHandler_addNewUser :" + nick + " " + login + " " + passHash);
+               sql = (String.format("INSERT INTO users (nick,login,password) VALUES ('%s', %s, '%s');",nick, login, passHash));
+         //      System.out.println(sql);
                 stmt = conn.createStatement();
                 stmt.executeUpdate(sql);
                 stmt.close();
@@ -184,7 +193,7 @@ public class SQLHandlerDB {
               String login = rs.getString("login");
               String nick = rs.getString("nick");
               String fullUserInfo = String.valueOf(id)+" "+login+" "+nick+" ;";
-              System.out.println(String.format("ID=%s Login=%s Nick=%s ", id, login, nick));
+             // System.out.println(String.format("ID=%s Login=%s Nick=%s ", id, login, nick));
               arrayList.add(fullUserInfo);
           }
           rs.close();
@@ -212,7 +221,7 @@ public class SQLHandlerDB {
                     int passHashDb = rs.getInt("password");
                     String nick = rs.getString("nick");
                     fullUserInfo = String.valueOf(id)+" "+login+" "+nick+" ;";
-                    System.out.println(String.format("LOGIN=%s", loginDb)); //for test
+               //     System.out.println(String.format("LOGIN=%s", loginDb)); //for test
 
                     if (login.equals(loginDb)) {
                         if(passHashDb == passHash) {

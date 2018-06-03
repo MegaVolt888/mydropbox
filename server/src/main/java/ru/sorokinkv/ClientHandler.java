@@ -1,10 +1,16 @@
 package ru.sorokinkv;
 
+import com.sun.deploy.util.Waiter;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.sql.SQLException;
 import java.util.Scanner;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class ClientHandler {
     private Server server;
@@ -13,14 +19,6 @@ public class ClientHandler {
     private DataOutputStream out;
     private String nick;
     private int id;
-
-    public String getNick() {
-        return nick;
-    }
-
-    public int getId() {
-        return id;
-    }
 
     public ClientHandler(Server server, Socket socket) {
         try {
@@ -32,28 +30,95 @@ public class ClientHandler {
                 try {
                     while (true) {
                         String msg = in.readUTF();
+                        System.out.println("Login page " + this + ": " + msg);
+
                         if (msg.startsWith("/auth ")) {
-                            // /auth login1 pass1
-                            String[] tokens = msg.split(" ");
-                            String nick = SQLHandlerDB.getNickByLoginPass(tokens[1], tokens[2]);
-                            if (nick != null) {
-                                if (server.isNickBusy(nick)) {
-                                    out.writeUTF("Учетная запись уже используется");
-                                    continue;
+                            String[] tokensA = msg.split(" ");
+                            System.out.println(tokensA);
+                            if (tokensA.length < 3) {
+                                this.sendMsg("/error@ Все поля должны быть заполнены");
+                            }
+                            if (tokensA.length == 3) {
+                                String nick = SQLHandlerDB.getNickByLoginPass(tokensA[1], tokensA[2]);
+                                if (nick != null) {
+                                    if (server.isNickBusy(nick)) {
+                                        out.writeUTF("/error@ Учетная запись уже используется на другом устройстве");
+                                        continue;
+                                    }
+
+                                    out.writeUTF("/authok@ " + nick);
+                                    this.nick = nick;
+                                    this.id = SQLHandlerDB.getIdByNick(nick);
+                                    server.subscribe(this);
+                                    break;
+                                } else {
+                                    out.writeUTF("/error@ Неверный логин/пароль");
                                 }
-                                out.writeUTF("/authok " + nick);
-                                this.nick = nick;
-                               this.id = SQLHandlerDB.getIdByNick(nick);
-                                server.subscribe(this);
-                                break;
-                            } else {
-                                out.writeUTF("Неверный логин/пароль");
+                            }
+                            if (tokensA.length > 3) {
+                                out.writeUTF("/error@ Запрещено в логине/пароле использовать пробелы");
                             }
                         }
+                            if (msg.startsWith("/reg ")) {
+
+                                String[] tokensR = msg.split(" ");
+                                System.out.println("Длинна: " + tokensR.length);
+                                System.out.println(msg);
+
+                                // ToDo: add DB injection filter
+
+                                if (tokensR.length < 4) {
+                                    out.writeUTF("/error@ Все поля должны быть заполнены");
+                                }
+
+                                if (tokensR.length == 4) {
+                                    boolean loginInBase = SQLHandlerDB.searchLoginUser(tokensR[2]);
+                                    System.out.println(tokensR[2]);
+                                    if (loginInBase) {
+                                        System.out.println(tokensR[1] + " " + tokensR[2] + " " + tokensR[3]);
+                                        this.sendMsg(String.format("/error@ Логин %s уже используется, придумайте другой", tokensR[2]));
+                                        System.out.println(String.format("Логин %s уже используется, придумайте другой", tokensR[2]));
+                                        continue;
+                                    } else {
+                                        SQLHandlerDB.addNewUser(tokensR[2], tokensR[3], tokensR[1]); //add to DB
+                                        String name = tokensR[1];
+                                        this.sendMsg("/regok@ " + "Пльзователь " + name + " зарегистрирован.");
+                                        // server.broadcastMsg(this,msg);
+                                        //  this.out.writeUTF( "/regok " + name);
+                                        System.out.println("RegOK " + name);
+                                        System.out.println(SQLHandlerDB.getAllUserInfo());
+                                    }
+
+                                    /*while(SQLHandlerDB.searchLoginUser(tokens[2])){     //search added user in DB
+                                         //delay(one second) to not flooding the database with requests
+                                        ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
+                                        service.scheduleWithFixedDelay(
+                                                () -> { System.out.println("do task"); },
+                                               0, 1,
+                                              TimeUnit.SECONDS);
+                                         }
+*/
+                                    //    if(SQLHandlerDB.searchLoginUser(tokens[2])){
+
+
+                                    //     }
+                                    break;
+
+
+                                }
+
+                                if (tokensR.length > 4) {
+                                    out.writeUTF("/error@ Запрещено в нике/логине/пароле использовать пробелы");
+                                }
+                                System.out.println("To " + this + ": " + msg);
+                                this.sendMsg(msg);
+
+                            }
+
                     }
-                   while (true) {
+              /*     while (true) {
                         String msg = in.readUTF();
-                      /*  if (msg.startsWith("/")) {
+                      *//*  if (msg.startsWith("/")) {
                             if (msg.startsWith("/w ")) {
                                 String[] tokens = msg.split(" ", 3);
                                 server.sendPrivateMsg(this, tokens[1], tokens[2]);
@@ -61,9 +126,12 @@ public class ClientHandler {
                             if (msg.equals("/history")) {
                                 sendMsg(SQLHandler.getHistory(id));
                             }
-                        } else {*/
-                            server.broadcastMsg(this, msg);
-                       /* }
+                        } else {
+                      *//*
+                            //server.broadcastMsg(this, msg);
+                       System.out.println("In " + this+ ": "+ msg);
+                       this.sendMsg(msg);
+                      *//* }
                         System.out.println(msg);
 
                         Scanner in = new Scanner(System.in);
@@ -71,10 +139,12 @@ public class ClientHandler {
                         if (message == "/clearhystory"){
                             SQLHandler.clearHistory(1);
                         }
-*/
+                      *//*
 
-                    }
+                    }*/
                 } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (SQLException e) {
                     e.printStackTrace();
                 } finally {
                     server.unsubscribe(this);
@@ -98,6 +168,14 @@ public class ClientHandler {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public String getNick() {
+        return nick;
+    }
+
+    public int getId() {
+        return id;
     }
 
     public void sendMsg(String msg) {
