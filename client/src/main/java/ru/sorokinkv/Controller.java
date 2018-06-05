@@ -7,6 +7,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -47,13 +48,12 @@ public class Controller implements Initializable {
     TextField regPassField;
 
     @FXML
-    HBox registerPanel, authPanel, msgPanel;
+    HBox  authPanel, msgPanel;
 
- /*   @FXML
-    VBox registerPanel;*/
+    @FXML
+    VBox registerPanel;
 
- /*   @FXML
-    ListView<String> clientsView;*/
+
 
     public void setAuthorized(int authorized) {
         this.authorized = authorized;
@@ -64,8 +64,6 @@ public class Controller implements Initializable {
             authPanel.setManaged(false);
             msgPanel.setVisible(false);
             msgPanel.setManaged(false);
-            //     clientsView.setVisible(true);
-            //     clientsView.setManaged(true);
         }
         if (this.authorized == 1) {
             registerPanel.setVisible(false);
@@ -74,8 +72,6 @@ public class Controller implements Initializable {
             authPanel.setManaged(false);
             msgPanel.setVisible(true);
             msgPanel.setManaged(true);
-       //     clientsView.setVisible(true);
-       //     clientsView.setManaged(true);
         }
         if (this.authorized ==0 ) {
             registerPanel.setVisible(false);
@@ -84,8 +80,6 @@ public class Controller implements Initializable {
             authPanel.setManaged(true);
             msgPanel.setVisible(false);
             msgPanel.setManaged(false);
-       //     clientsView.setVisible(false);
-       //     clientsView.setManaged(false);
             nick = "";
         }
     }
@@ -93,10 +87,7 @@ public class Controller implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         setAuthorized(0);
-     //   clientsList = FXCollections.observableArrayList();
-     //   clientsView.setItems(clientsList);
-
-    }
+     }
 
     public void sendMsg() {
         try {
@@ -132,40 +123,44 @@ public class Controller implements Initializable {
                             if (str.startsWith("/error@ ")) {
                                 String error = str.split("@ ")[1];
                                 showAlert(error);
-                          //      setAuthorized(2);
-                                // sendCustomMsg("/history");
                                 break;
                             }
 
-                            if (str.startsWith("/authok")) {
-                                //nick =  tokens[2];
-                                setAuthorized(1);
-                               // sendCustomMsg("/history");
-                                break;
+                            if (str.startsWith("/authok@ ")) {
+                               setAuthorized(1);
+                                System.out.println(authorized);
+                               break;
                             }
-                            if (str.startsWith("/regok")) {
+                            if (str.startsWith("/regok@ ")) {
                                 String info = str.split("@ ")[1];
                                 showAlert(info);
                                 System.out.println("RegOK" + nick);
-
                                 setAuthorized(0);
-                                // sendCustomMsg("/history");
                                 break;
                             }
+
+
                             System.out.println("Two "+str);
-                            mainTextArea.appendText(str );
-                           mainTextArea.appendText(" \n");
+                         //   mainTextArea.appendText(str );
+                         //  mainTextArea.appendText(" \n");
                         }
-                     /*   while (true) {
+                        while(true){
                             String str = in.readUTF();
-                            System.out.println(str);
-                            mainTextArea.appendText(str);
-                            mainTextArea.appendText("\n");
-                        }*/
+                            if (str.startsWith("/kick@ ")) {
+                                socket.close();
+                                in.close();
+                                out.close();
+                                System.exit(0);
+                                break;
+                            }
+                            mainTextArea.appendText(str );
+                            mainTextArea.appendText(" \n");
+                        }
+
                     } catch (IOException e) {
                         e.printStackTrace();
                     } finally {
-                      //  showAlert("Произошло отключение от сервера");
+                        showAlert("Произошло отключение от сервера");
                         setAuthorized(0);
                         try {
                             socket.close();
@@ -218,10 +213,6 @@ public class Controller implements Initializable {
                 String nick = regNickField.getText();
                 out.writeUTF("/reg " + regNickField.getText() + " " + regLoginField.getText() + " " + regPassField.getText());
                 System.out.println(regNickField.getText() + " " + regLoginField.getText() + " " + regPassField.getText());
-               // regNickField.clear();
-               // regLoginField.clear();
-               // regPassField.clear();
-
         } catch (IOException e) {
             e.printStackTrace();
             showAlert("Связь с сервером потеряна, проверьте сетевое соединение...");
@@ -245,13 +236,3 @@ public class Controller implements Initializable {
         setAuthorized(0);
     }
 }
-
-  /*  public void clickClientsList(MouseEvent mouseEvent) {
-        if(mouseEvent.getClickCount() == 2) {
-            String str = clientsView.getSelectionModel().getSelectedItem();
-            msgField.setText("/w " + str + " ");
-            msgField.requestFocus();
-            msgField.selectEnd();
-        }
-    }*/
-//}

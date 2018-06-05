@@ -50,6 +50,7 @@ public class ClientHandler {
                                     this.nick = nick;
                                     this.id = SQLHandlerDB.getIdByNick(nick);
                                     server.subscribe(this);
+
                                     break;
                                 } else {
                                     out.writeUTF("/error@ Неверный логин/пароль");
@@ -83,25 +84,9 @@ public class ClientHandler {
                                         SQLHandlerDB.addNewUser(tokensR[2], tokensR[3], tokensR[1]); //add to DB
                                         String name = tokensR[1];
                                         this.sendMsg("/regok@ " + "Пльзователь " + name + " зарегистрирован.");
-                                        // server.broadcastMsg(this,msg);
-                                        //  this.out.writeUTF( "/regok " + name);
                                         System.out.println("RegOK " + name);
                                         System.out.println(SQLHandlerDB.getAllUserInfo());
                                     }
-
-                                    /*while(SQLHandlerDB.searchLoginUser(tokens[2])){     //search added user in DB
-                                         //delay(one second) to not flooding the database with requests
-                                        ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
-                                        service.scheduleWithFixedDelay(
-                                                () -> { System.out.println("do task"); },
-                                               0, 1,
-                                              TimeUnit.SECONDS);
-                                         }
-*/
-                                    //    if(SQLHandlerDB.searchLoginUser(tokens[2])){
-
-
-                                    //     }
                                     break;
 
 
@@ -110,38 +95,22 @@ public class ClientHandler {
                                 if (tokensR.length > 4) {
                                     out.writeUTF("/error@ Запрещено в нике/логине/пароле использовать пробелы");
                                 }
-                                System.out.println("To " + this + ": " + msg);
                                 this.sendMsg(msg);
 
                             }
 
+
                     }
-              /*     while (true) {
+                    while (true) {
                         String msg = in.readUTF();
-                      *//*  if (msg.startsWith("/")) {
-                            if (msg.startsWith("/w ")) {
-                                String[] tokens = msg.split(" ", 3);
-                                server.sendPrivateMsg(this, tokens[1], tokens[2]);
-                            }
-                            if (msg.equals("/history")) {
-                                sendMsg(SQLHandler.getHistory(id));
-                            }
-                        } else {
-                      *//*
-                            //server.broadcastMsg(this, msg);
-                       System.out.println("In " + this+ ": "+ msg);
-                       this.sendMsg(msg);
-                      *//* }
-                        System.out.println(msg);
-
-                        Scanner in = new Scanner(System.in);
-                        String message = String.valueOf(in.nextLine());
-                        if (message == "/clearhystory"){
-                            SQLHandler.clearHistory(1);
+                        this.sendMsg(this +": "+ msg);
+                        if (msg.startsWith("/exit")) {
+                            this.sendMsg("/kick@ ");
                         }
-                      *//*
+                       //  server.broadcastMsg(this, msg);
+                        }
 
-                    }*/
+
                 } catch (IOException e) {
                     e.printStackTrace();
                 } catch (SQLException e) {

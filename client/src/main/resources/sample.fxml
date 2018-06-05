@@ -17,7 +17,7 @@
             <Button onAction="#sendAuth" text="Авторизоваться" />
             <Button onAction="#startReg" text="Регистрация" />
         </HBox>
-   <!--   <VBox fx:id="registerPanel">
+    <VBox fx:id="registerPanel">
         <HBox>
                 <Label alignment="CENTER_RIGHT" contentDisplay="RIGHT" prefHeight="25.0" prefWidth="150.0" text=" Имя пользователя:" />
                 <TextField fx:id="regNickField" prefHeight="25.0" prefWidth="420.0" promptText="Имя пользователя" VBox.vgrow="ALWAYS" />
@@ -37,14 +37,15 @@
               <Label prefHeight="17.0" prefWidth="48.0" />
            <Button contentDisplay="CENTER" onAction="#cancelReg" prefHeight="25.0" prefWidth="176.0" text="Вернуться к авторизации" VBox.vgrow="ALWAYS" />
           </HBox>
-       </VBox>-->
+       </VBox>
+       <!-- from OLD version
         <HBox fx:id="registerPanel">
                    <TextField fx:id="regNickField" promptText="Имя пользователя" HBox.hgrow="ALWAYS"  />
                 <TextField fx:id="regLoginField" promptText="Логин" VBox.vgrow="ALWAYS" />
                  <TextField fx:id="regPassField" onAction="#sendNewUser" promptText="Пароль" HBox.hgrow="ALWAYS" />
                        <Button contentDisplay="CENTER" onAction="#sendNewUser" text="Зарегистрироваться" HBox.hgrow="ALWAYS" />
                 <Button contentDisplay="CENTER" onAction="#cancelReg" text="Вернуться к авторизации" HBox.hgrow="ALWAYS" />
-           </HBox>
+           </HBox>-->
          <TextArea fx:id="mainTextArea" editable="false" focusTraversable="false" nodeOrientation="RIGHT_TO_LEFT" VBox.vgrow="ALWAYS">
          <opaqueInsets>
             <Insets />

@@ -81,30 +81,6 @@ public class SQLHandlerDB {
          }
     }
 
-//не нужно для нового формата DB
-    /*    public static int searchLastUserID() {
-        int result = 0;
-        try {
-            stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT * FROM USERS;");
-            while (rs.next()) {
-                int id = rs.getInt("id");
-                System.out.println(String.format("ID=%s", id)); //for test
-                if (id > result) {
-                    result = id;
-                }
-            }
-            rs.close();
-            stmt.close();
-            conn.commit();
-            System.out.println("-- Searching ID done successfully");
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.err.println(e.getClass().getName() + ": " + e.getMessage());
-            System.exit(0);
-        }
-        return result;
-    }*/
 
     public static boolean searchLoginUser(String login) {
         try {
@@ -136,12 +112,8 @@ public class SQLHandlerDB {
             if(searchLoginUser(login)) {
                 String sql;
                 int passHash = pass.hashCode();
-     //       System.out.println(String.valueOf("Hash = " + passHash));
-            //   int id = (searchLastUserID() + 1); //не нужно для нового формата DB
-              //  System.out.println(id); //не нужно для нового формата DB
-                System.out.println("SQLHandler_addNewUser :" + nick + " " + login + " " + passHash);
+                   System.out.println("SQLHandler_addNewUser :" + nick + " " + login + " " + passHash);
                sql = (String.format("INSERT INTO users (nick,login,password) VALUES ('%s', %s, '%s');",nick, login, passHash));
-         //      System.out.println(sql);
                 stmt = conn.createStatement();
                 stmt.executeUpdate(sql);
                 stmt.close();
@@ -193,7 +165,6 @@ public class SQLHandlerDB {
               String login = rs.getString("login");
               String nick = rs.getString("nick");
               String fullUserInfo = String.valueOf(id)+" "+login+" "+nick+" ;";
-             // System.out.println(String.format("ID=%s Login=%s Nick=%s ", id, login, nick));
               arrayList.add(fullUserInfo);
           }
           rs.close();
@@ -221,7 +192,6 @@ public class SQLHandlerDB {
                     int passHashDb = rs.getInt("password");
                     String nick = rs.getString("nick");
                     fullUserInfo = String.valueOf(id)+" "+login+" "+nick+" ;";
-               //     System.out.println(String.format("LOGIN=%s", loginDb)); //for test
 
                     if (login.equals(loginDb)) {
                         if(passHashDb == passHash) {
