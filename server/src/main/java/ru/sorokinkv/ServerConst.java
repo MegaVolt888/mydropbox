@@ -8,4 +8,5 @@ public interface ServerConst {
     String DB_USERS_NAME = "users";
     String DB_LOGIN =  "postgres";
     String DB_PASSWORD = "123";
+    String PARRENTS_FOLDER = "Folders/";
 }

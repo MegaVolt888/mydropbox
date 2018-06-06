@@ -6,11 +6,16 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.input.Dragboard;
+import javafx.scene.input.TransferMode;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.stage.FileChooser;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.URL;
@@ -19,41 +24,33 @@ import java.util.ResourceBundle;
 import static ru.sorokinkv.ClientConst.*;
 
 public class Controller implements Initializable {
+    @FXML
+    TextField msgField;
+    @FXML
+    TextArea mainTextArea, filesDragAndDrop;
+    @FXML
+    TextField loginField;
+    @FXML
+    PasswordField passField;
+    @FXML
+    TextField regNickField;
+    @FXML
+    TextField regLoginField;
+    @FXML
+    TextField regPassField;
+
+  //      @FXML
+ //   Label filesDragAndDrop;
+    @FXML
+    HBox  authPanel, msgPanel;
+    @FXML
+    VBox fileActionPanel,registerPanel;
     private Socket socket;
     private DataInputStream in;
     private DataOutputStream out;
     private int authorized = 0;
     private String nick;
     private ObservableList<String> clientsList;
-
-    @FXML
-    TextField msgField;
-
-    @FXML
-    TextArea mainTextArea;
-
-    @FXML
-    TextField loginField;
-
-    @FXML
-    PasswordField passField;
-
-    @FXML
-    TextField regNickField;
-
-    @FXML
-    TextField regLoginField;
-
-    @FXML
-    TextField regPassField;
-
-    @FXML
-    HBox  authPanel, msgPanel;
-
-    @FXML
-    VBox registerPanel;
-
-
 
     public void setAuthorized(int authorized) {
         this.authorized = authorized;
@@ -64,6 +61,8 @@ public class Controller implements Initializable {
             authPanel.setManaged(false);
             msgPanel.setVisible(false);
             msgPanel.setManaged(false);
+            fileActionPanel.setVisible(false);
+            fileActionPanel.setManaged(false);
         }
         if (this.authorized == 1) {
             registerPanel.setVisible(false);
@@ -72,6 +71,8 @@ public class Controller implements Initializable {
             authPanel.setManaged(false);
             msgPanel.setVisible(true);
             msgPanel.setManaged(true);
+            fileActionPanel.setVisible(true);
+            fileActionPanel.setManaged(true);
         }
         if (this.authorized ==0 ) {
             registerPanel.setVisible(false);
@@ -80,13 +81,15 @@ public class Controller implements Initializable {
             authPanel.setManaged(true);
             msgPanel.setVisible(false);
             msgPanel.setManaged(false);
-            nick = "";
+            fileActionPanel.setVisible(false);
+            fileActionPanel.setManaged(false);
         }
     }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         setAuthorized(0);
+        initializeDragAndDropLabel();
      }
 
     public void sendMsg() {
@@ -98,14 +101,31 @@ public class Controller implements Initializable {
             e.printStackTrace();
         }
     }
+    public void clearFilePath() {
+            filesDragAndDrop.setText(null);
+            filesDragAndDrop.requestFocus();
+            }
 
+    public void selectFile() {
+        fileOpen(null);
+    }
+
+    public void sendFile() {
+        System.out.println("File \""+filesDragAndDrop.getText() +"\" sending in server");
+        filesDragAndDrop.setText(null);
+        filesDragAndDrop.requestFocus();
+    }
+
+/*
     public void sendCustomMsg(String msg) {
         try {
             out.writeUTF(msg);
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
+    }*/
+
+
 
     public void connect() {
         try {
@@ -123,39 +143,38 @@ public class Controller implements Initializable {
                             if (str.startsWith("/error@ ")) {
                                 String error = str.split("@ ")[1];
                                 showAlert(error);
-                                break;
                             }
 
                             if (str.startsWith("/authok@ ")) {
                                setAuthorized(1);
                                 System.out.println(authorized);
-                               break;
                             }
                             if (str.startsWith("/regok@ ")) {
                                 String info = str.split("@ ")[1];
                                 showAlert(info);
                                 System.out.println("RegOK" + nick);
                                 setAuthorized(0);
-                                break;
                             }
 
 
-                            System.out.println("Two "+str);
-                         //   mainTextArea.appendText(str );
-                         //  mainTextArea.appendText(" \n");
+                            System.out.println("Two "+str +" Auth: "+authorized);
+
+                            if(authorized ==1) {
+                                while(true){
+                                    str = in.readUTF();
+                                    if (str.startsWith("/kick@ ")) {
+                                        socket.close();
+                                        in.close();
+                                        out.close();
+                                        System.exit(0);
+                                        break;
+                                    }
+                                    mainTextArea.appendText(str );
+                                    mainTextArea.appendText(" \n");
+                                  }
+                            };
                         }
-                        while(true){
-                            String str = in.readUTF();
-                            if (str.startsWith("/kick@ ")) {
-                                socket.close();
-                                in.close();
-                                out.close();
-                                System.exit(0);
-                                break;
-                            }
-                            mainTextArea.appendText(str );
-                            mainTextArea.appendText(" \n");
-                        }
+
 
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -225,12 +244,43 @@ public class Controller implements Initializable {
         });
     }
 
+
+    private void fileOpen(ActionEvent event) {
+         FileChooser fileChooser = new FileChooser();//Класс работы с диалогом выборки и сохранения
+         fileChooser.setTitle("Open Document");//Заголовок диалога
+         File file = fileChooser.showOpenDialog(null);
+         if (file != null) {
+             filesDragAndDrop.setText(file.getAbsolutePath());
+         }
+    }
+
     public void startReg(ActionEvent actionEvent) {
 
         setAuthorized(2);
     }
 
+    public void initializeDragAndDropLabel() {
+        filesDragAndDrop.setOnDragOver(event -> {
+            if (event.getGestureSource() != filesDragAndDrop && event.getDragboard().hasFiles()) {
+                event.acceptTransferModes(TransferMode.COPY_OR_MOVE);
+            }
+            event.consume();
+        });
 
+        filesDragAndDrop.setOnDragDropped(event -> {
+            Dragboard db = event.getDragboard();
+            boolean success = false;
+            if (db.hasFiles()) {
+                filesDragAndDrop.setText("");
+                for (File o : db.getFiles()) {
+                    filesDragAndDrop.setText(filesDragAndDrop.getText() + o.getAbsolutePath() + " ");
+                }
+                success = true;
+            }
+            event.setDropCompleted(success);
+            event.consume();
+        });
+    }
 
     public void cancelReg(ActionEvent actionEvent) {
         setAuthorized(0);

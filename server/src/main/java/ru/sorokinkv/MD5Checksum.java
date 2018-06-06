@@ -36,22 +36,27 @@ public class MD5Checksum {
     }
 
 
-    public static void printMd5Text(String text) {
+    public static String getMd5Text(String text) {
         try {
-            System.out.println(getMD5ChecksumText(text));
+            String md5text = getMD5ChecksumText(text);
+            System.out.println(md5text);
+            return md5text;
 
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return null;
     }
 
-    public static void printMd5File(String fileName) {
+    public static String getMd5File(String fileName) {
         try {
+            String md5file = getMD5ChecksumText(fileName);
             System.out.println(getMD5ChecksumFile(fileName));
-
+            return md5file;
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return null;
     }
 
 }

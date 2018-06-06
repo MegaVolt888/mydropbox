@@ -50,10 +50,26 @@
          <opaqueInsets>
             <Insets />
          </opaqueInsets></TextArea>
-         <HBox fx:id="msgPanel">
-             <TextField fx:id="msgField" onAction="#sendMsg" promptText="Введите сообщение..." HBox.hgrow="ALWAYS" />
-             <Button onAction="#sendMsg" text="Отправить" />
-         </HBox>
+      <VBox fx:id="fileActionPanel" prefHeight="200.0" prefWidth="100.0">
+         <Label alignment="CENTER" contentDisplay="CENTER" maxWidth="1.7976931348623157E308" prefHeight="17.0" text="Путь к файлу:" VBox.vgrow="ALWAYS">
+            <VBox.margin>
+               <Insets />
+            </VBox.margin>
+         </Label>
+            <TextArea fx:id="filesDragAndDrop" editable="false" maxWidth="1.7976931348623157E308" prefHeight="25.0" prefWidth="570.0" promptText="Путь к файлу (перетащите или выберите) :" VBox.vgrow="ALWAYS" />
+            <HBox prefHeight="156.0" prefWidth="570.0">
+                      <Button onAction="#selectFile" prefHeight="25.0" prefWidth="217.0" text="Выбрать" HBox.hgrow="ALWAYS" />
+                      <Button onAction="#clearFilePath" prefHeight="25.0" prefWidth="174.0" text="Отмена" HBox.hgrow="ALWAYS" />
+                      <Button onAction="#sendFile" prefHeight="25.0" prefWidth="177.0" text="Отправить файл на сервер" HBox.hgrow="ALWAYS" />
+            </HBox>
+      </VBox>
+            <HBox prefHeight="100.0" prefWidth="200.0" />
+               <HBox fx:id="msgPanel">
+                   <TextField fx:id="msgField" onAction="#sendMsg" prefHeight="25.0" prefWidth="209.0" promptText="Введите сообщение..." HBox.hgrow="ALWAYS" />
+                   <Button onAction="#sendMsg" text="Отправить" />
+               </HBox>
+
+
      </VBox>
    <!-- <ListView prefWidth="200" fx:id="clientsView" onMouseClicked="#clickClientsList" /> -->
 </HBox>
