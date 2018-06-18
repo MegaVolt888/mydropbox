@@ -8,7 +8,6 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
@@ -116,16 +115,13 @@ public class Controller implements Initializable {
         filesDragAndDrop.requestFocus();
     }
 
-/*
-    public void sendCustomMsg(String msg) {
-        try {
-            out.writeUTF(msg);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }*/
+    public int getAuthorized() {
+        return authorized;
+    }
 
-
+    public String getNick() {
+        return nick;
+    }
 
     public void connect() {
         try {
@@ -140,35 +136,14 @@ public class Controller implements Initializable {
                             String str = in.readUTF();
                             System.out.println("One "+str);
 
-                            if (str.startsWith("/error@ ")) {
-                                String error = str.split("@ ")[1];
-                                showAlert(error);
-                            }
-
-                            if (str.startsWith("/authok@ ")) {
-                               setAuthorized(1);
-                                System.out.println(authorized);
-                            }
-                            if (str.startsWith("/regok@ ")) {
-                                String info = str.split("@ ")[1];
-                                showAlert(info);
-                                System.out.println("RegOK" + nick);
-                                setAuthorized(0);
-                            }
-
-
+                            Actions actions = new Actions();
+                            setAuthorized(actions.ActionsAuth(str));
                             System.out.println("Two "+str +" Auth: "+authorized);
 
                             if(authorized ==1) {
                                 while(true){
                                     str = in.readUTF();
-                                    if (str.startsWith("/kick@ ")) {
-                                        socket.close();
-                                        in.close();
-                                        out.close();
-                                        System.exit(0);
-                                        break;
-                                    }
+                                   actions.Actions(str);
                                     mainTextArea.appendText(str );
                                     mainTextArea.appendText(" \n");
                                   }
@@ -228,7 +203,6 @@ public class Controller implements Initializable {
             connect();
         }
         try {
-
                 String nick = regNickField.getText();
                 out.writeUTF("/reg " + regNickField.getText() + " " + regLoginField.getText() + " " + regPassField.getText());
                 System.out.println(regNickField.getText() + " " + regLoginField.getText() + " " + regPassField.getText());
@@ -237,7 +211,7 @@ public class Controller implements Initializable {
             showAlert("Связь с сервером потеряна, проверьте сетевое соединение...");
         }
     }
-    public void showAlert(String msg) {
+    public static void showAlert(String msg) {
         Platform.runLater(() -> {
             Alert alert = new Alert(Alert.AlertType.INFORMATION, msg, ButtonType.OK);
             alert.showAndWait();
@@ -255,7 +229,6 @@ public class Controller implements Initializable {
     }
 
     public void startReg(ActionEvent actionEvent) {
-
         setAuthorized(2);
     }
 
@@ -280,6 +253,13 @@ public class Controller implements Initializable {
             event.setDropCompleted(success);
             event.consume();
         });
+    }
+
+    public void dropConnection() throws IOException {
+        socket.close();
+        in.close();
+        out.close();
+        System.exit(0);
     }
 
     public void cancelReg(ActionEvent actionEvent) {

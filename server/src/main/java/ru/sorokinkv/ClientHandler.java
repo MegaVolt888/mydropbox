@@ -116,14 +116,11 @@ public class ClientHandler {
                         if (msg.startsWith("/exit ")) {
                             this.sendMsg("/kick@ ");
                         }
-                        if(msg.startsWith("/getfile ")) {
+                        if(msg.startsWith("/getfile")) {
                             ArrayList filesInFolderget = getFileInFilder(this.login);
-                       //     String fileList = "";
-                            for (int i = 1; i < filesInFolderget.size()-1; i++) {
+                            for (Object f:filesInFolderget) {
                                 System.out.println(filesInFolderget.size());
-                     //           fileList += ("/file@ " +filesInFolderget.get(i) + "\n");
-                                this.sendMsg("/file@ " +filesInFolderget.get(i) + "\n");
-                            //    continue;
+                                this.sendMsg("/file@ " + f );
                             }
 
                         }
