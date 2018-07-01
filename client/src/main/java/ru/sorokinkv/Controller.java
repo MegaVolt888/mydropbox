@@ -18,7 +18,9 @@ import java.io.File;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.ResourceBundle;
+import MyFileTransfer.*;
 
 import static ru.sorokinkv.ClientConst.*;
 
@@ -110,7 +112,25 @@ public class Controller implements Initializable {
     }
 
     public void sendFile() {
-        System.out.println("File \""+filesDragAndDrop.getText() +"\" sending in server");
+        ArrayList<String> fileList = new ArrayList<>();
+        String file = filesDragAndDrop.getText();
+        fileList.add(file);
+        System.out.println("File \""+ file +"\" sending in server");
+        try {
+            out.writeUTF("/sendFile@");
+               //Задержка для запуска сервера
+              /*  try {
+                    Thread.sleep(1000);     //1000-задержка  на 1000 миллисекунду = 1 секунда
+                } catch (InterruptedException e) {
+                   System.err.println(e.getMessage());
+                 }*/
+
+            ClientPart clientPart = new ClientPart();
+            clientPart.sendFiles(SERVER_URL,PORT_FT,fileList);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         filesDragAndDrop.setText(null);
         filesDragAndDrop.requestFocus();
     }

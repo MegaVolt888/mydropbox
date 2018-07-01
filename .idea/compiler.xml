@@ -7,12 +7,14 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="client" />
+        <module name="FileTransfer" />
         <module name="server" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="client" target="1.8" />
       <module name="commonFilesOld" target="1.8" />
+      <module name="FileTransfer" target="1.8" />
       <module name="mydropbox" target="1.8" />
       <module name="server" target="1.8" />
     </bytecodeTargetLevel>
