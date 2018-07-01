@@ -6,12 +6,15 @@ import java.io.*;
 import java.net.Socket;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import MyFileTransfer.*;
 import java.util.Scanner;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import static ru.sorokinkv.ServerConst.PARRENTS_FOLDER;
+import static ru.sorokinkv.ServerConst.PORT_FT;
+import static ru.sorokinkv.ServerConst.SERVER_URL;
 
 public class ClientHandler {
     private Server server;
@@ -123,6 +126,10 @@ public class ClientHandler {
                                 this.sendMsg("/file@ " + f );
                             }
 
+                        }
+                        if(msg.startsWith("/sendFile@")) {
+                     //       ServerPart serverPart = new ServerPart();
+                            new ServerPart().connectFileGetter(PORT_FT,this.login);
                         }
                        //  server.broadcastMsg(this, msg);
                         }
